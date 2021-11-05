@@ -336,3 +336,5 @@ df4 <- df["LUCAS_LC","SRTM"][df$L7.ndvi]
 ```
 
 ## put this script into github!
+Fork: make a personal copy of a repository
+
