@@ -245,13 +245,15 @@ structure similar to a spatial data frame
 
 ```{r}
 # create data frame from scratch 
-test <- data.frame(A=c(1,2,3),B=c("aB1","aB2","aB3"))
+test <- data.frame(A=c(1,2,3,),B=c("aB1","aB2","aB3"))
 # indicate inside data frame:
 test[,"A"]
 test$A
-test[,1]
+
+test[1:2,1]
 names(test)
 test$A[1:2]
+test[["A"]][1:2]
 ```
 ```{r}
 df_1 <- data.frame(plot="location_name1",measure1=runif(100)*1000,measure2=round(runif(100)*100),value=rnorm(100,2,1),ID=rep(LETTERS,100)[1:100])
@@ -338,3 +340,15 @@ df4 <- df["LUCAS_LC","SRTM"][df$L7.ndvi]
 ## put this script into github!
 Fork: make a personal copy of a repository
 
+## Structures in R: 
+vectors
+matrices
+list
+data frame
+
++Array(more Dimensions)
+
+## packages for reading stuff:
+readr
+rio
+data.table
