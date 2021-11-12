@@ -1,0 +1,287 @@
+---
+title: "2021_11_09_lecutre03"
+author: "Svenja Dobelmann"
+date: "9 11 2021"
+output: html_document
+---
+
+
+## funny quotes:
+```{r}
+library(fortunes)
+fortune()
+fortune("memory")
+fortune("data")
+fortune("statistics")
+```
+```{r}
+library(cowsay)
+say("Hello World!")#
+
+say_hello<- function(){
+  animal<- sample(names(animals),1)
+  say(paste("Hello, I´m a " , animal,"",collapse = ""), by=animal,what_color="green",length = 25)
+}
+say_hello()
+```
+```{r}
+names(animals)
+```
+```{r}
+my_fortune<- function(){
+  animal<- sample(names(animals),1)
+  say(paste(fortune(),collapse="\n"),by=animal)
+}
+my_fortune()
+```
+##brickr package for lego style
+```{r}
+install.packages("brickr")
+library(brickr)
+
+bricks_from_table(brick)
+brick <- data.frame(
+ Level="A",
+ X1 = rep(3,4), #The number 3 is the brickrID for 'bright red'
+ X2 = rep(3,4)
+)
+```
+
+
+always wanted to know what your whatsapp conversation is about and who send what? -> rwhatsapp
+
+
+## important note:  
+save scripts after course
+this allows to quickly execute prevoiusly created scripts
+think about 10 finger typing! 
+
+
+## ggplot2 Introduction: 
+
+why? 
+- robust, versatile for aesthetic plots
+consistent underlying grammar of graphics
+plot specification 
+very flexible
+theme system for polishing plot apprearance
+mature and complete graphics
+
+plot = data + aesthetic + geometrie 
+-data to visualize
+-how to display the data
+-type of graphics
+
+other: faceting
+annotation
+statistics
+scales 
+
+### grammar: 
+data 
+as
+ge
+stat
+scales
+facets
+coord system 
+position adjustment 
+
+```{r}
+install.packages("ggplot2")
+library(ggplot2)
+
+x <- data.frame(x=1,y=1,label="ggplot2 Introduction \n@ EAGLE")
+x11()
+ ggplot(data= x, aes(x=x,y=y))+ geom_text(aes(label=label),size=10)
+```
+### create some data for plotting examples: 
+```{r}
+x1 <- rnorm(1000,0,1)
+x2 <- rnorm(1000,5,10)
+x3 <- rep(c("catA","catB","catC","catC","catC","catC"),200)[1:1000]
+x4 <- factor(rep(c("yes","no"),500))
+df <- data.frame(a=x1,b=x2,c=x3,d=x4)
+```
+
+
+```{r}
+ggplot(df,aes(a,b))
+```
+just an empty plot, in needs a geom
+```{r}
+ggplot(df,aes(a,b))+geom_point()
+```
+adding color from "c" column: 
+
+```{r}
+ggplot(df,aes(a,b,color=c))+geom_point(alpha=0.5)+ labs(title="first plot",x="x axis \n and a new line")
+```
+```{r}
+ggplot(df,aes(a)) + geom_histogram(fill="white")
+```
+```{r}
+ggplot(df,aes(a))+ geom_density()
+```
+```{r}
+ggplot(df)+ geom_histogram(aes(a,..density..),fill="blue",color="darkgrey")+ 
+  geom_density(aes(a,..density..),color="yellow",size=1.4)+
+  geom_rug(aes(a))
+```
+```{r}
+ggplot(df,aes(c, color=c)) + geom_point(stat="count",size=4)
+```
+```{r}
+ggplot(df)+ geom_bar(aes(c))+ coord_flip()
+```
+
+
+```{r}
+ggplot(df,aes(d,fill=c))+
+  geom_bar(position="dodge") +
+  scale_fill_grey()
+
+```
+
+```{r}
+ggplot(df,aes(d,a)) + geom_boxplot()
+```
+```{r}
+ggplot(df,aes(a,b)) + geom_boxplot(aes(group=cut_width(a,0.5)),outlier.alpha = 0.1) + geom_jitter(aes(color=d),alpha=.5,width = 0.02,size=.7)
+```
+## facet plot 
+```{r}
+ggplot(df,aes(c))+ geom_bar() + facet_grid(d~.)
+```
+## 2D density plot: 
+```{r}
+ggplot(df,aes(a,b))+geom_density2d()+ geom_point(size=1)
+```
+```{r}
+ggplot(df,aes(a,b)) +
+  geom_hex( bins=30)
+```
+
+```{r}
+ggplot(df,aes(a,b))+ geom_point()+geom_smooth(method=lm)
+```
+```{r}
+a <- ggplot()+geom_point(data=df,aes(a,b,colour=c))
+a+theme_bw()
+theme_set(theme_bw())
+
+a + theme_grey()
+theme_get()
+```
+
+```{r}
+ggplot(df,aes(a,b))+ 
+  geom_point(data=df,aes(group=cut_width(a,0.5)),outlier.alpha=0.1)+
+  geom_jitter(width=0.02,size=.7,alpha=.5,color="red")
+```
+
+
+for 3D plots: rayshader
+
+ggplot helper with geoms
+
+
+```{r}
+# combining different plots:
+library(patchwork)
+?patchwork
+
+
+p1 <- ggplot(mtcars) + geom_point(aes(mpg, disp))
+p2 <- ggplot(mtcars) + geom_boxplot(aes(gear, disp, group = gear))
+
+p1 + p2
+
+ggplot(mtcars) +
+  geom_point(aes(mpg, disp)) +
+  ggplot(mtcars) +
+  geom_boxplot(aes(gear, disp, group = gear)) +
+  plot_layout(ncol=1,nrow=2,guides="auto") +
+  plot_annotation(title="mt cars",subtitle="graphics",tag_levels = 1)
+
+plot_annotation()
+
+```
+
+```{r}
+labels <- rownames(mtcars)
+ggplot(mtcars) +
+  geom_point(aes(mpg,disp,fill=gear)) +
+  geom_smooth(aes(mpg,disp),method=lm) + 
+  plot_annotation(title="mt cars - data",subtitle="visualization with ggplot",tag_levels = 1)
+  
+```
+
+## back to Steigerwald Data: 
+```{r}
+df <- read.csv("https://raw.githubusercontent.com/wegmann/R_data/master/Steigerwald_sample_points_all_data_subset_withNames.csv") 
+names(df)
+head(df)
+```
+
+```{r}
+ggplot(df,aes(x=L8.ndvi,y=L8.savi))+
+  geom_point() + 
+  geom_smooth(method="gam") +
+  facet_wrap("LCname") +
+  geom_jitter() + 
+  geom_violin()
+
+
+```
+```{r}
+ggplot(df,aes(x=LCname,y=L8.savi))+
+  geom_jitter(aes(alpha=SRTM,size=TimeScan.NDVIsd,color=L8.ndvi)) +
+  geom_boxplot(alpha=.5)
+```
+
+```{r}
+ggplot(df,aes(x=L8.ndvi,y=L8.savi)) + 
+    geom_boxplot(aes(fill=LCname),alpha=.3) +
+  geom_point(aes(color=LCname),size=2,alpha=.5) +
+  geom_smooth()
+  facet_grid(.~LCname) 
+  
+```
+
+
+-> present a nice plot for next week! 
+
+
+## get Steigerwald Data into spatial data frame
+should be transformed to spatial point data frame(spdf)
+of course corresponding x and y coordinates are needed 
+```{r}
+spdf.obj <- df
+names(spdf.obj)
+
+library(sp)
+
+coordinates(spdf.obj) <- ~x+y
+
+library(rgdal)
+
+proj4string(spdf.obj) <- CRS("+init=epsg:32632")
+
+
+
+plot(spdf.obj)
+
+spdf.obj@data <- df
+class(spdf.obj)
+
+spdf.obj <- spdf.obj
+
+
+
+writeOGR(spdf.obj,"sample_point_with_data.shp",driver="ESRI Shapefile","data")
+
+```
+
+
+
